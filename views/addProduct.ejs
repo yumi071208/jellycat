@@ -2,65 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product | Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Supermarket App</title>
+  <link rel="stylesheet" href="/styles/admin.css">
 </head>
-<body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">Supermarket App</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/inventory">Inventory</a>
-          </li> 
-          <li class="nav-item">
-            <a class="nav-link" href="/addProduct">Add New Product</a>
-          </li> 
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li> 
-        </ul>
-      </div>
+<body class="admin-body">
+  <%- include('admin-navbar') %>
+
+  <div class="admin-container" style="max-width: 820px;">
+    <div class="admin-title">Add Product</div>
+    <div class="admin-subtitle">Create a new catalog item.</div>
+
+    <div class="admin-card mt-3 admin-form">
+      <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label">Product Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Quantity</label>
+          <input type="number" name="quantity" class="form-control" min="0" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Price ($)</label>
+          <input type="number" name="price" class="form-control" step="0.01" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <input type="text" name="category" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Image</label>
+          <input type="file" name="image" class="form-control" accept="image/*" required>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="admin-btn admin-btn-primary">Add Product</button>
+          <a href="/admin/inventory" class="admin-btn admin-btn-secondary">Cancel</a>
+        </div>
+      </form>
     </div>
-  </nav>
-
-  <!-- Main Content -->
-  <div class="container mt-4">
-    <h2 class="text-center mb-4">Add New Product</h2>
-    <form action="/addProduct" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
-
-      <div class="mb-3">
-        <label for="name" class="form-label">Product Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="quantity" class="form-label">Quantity</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" min="0" step="1" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="price" class="form-label">Price ($)</label>
-        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
-      </div>
-
-      <div class="mb-4">
-        <label for="image" class="form-label">Product Image</label>
-        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
-      </div>
-
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Add Product</button>
-      </div>
-
-    </form>
   </div>
 </body>
 </html>

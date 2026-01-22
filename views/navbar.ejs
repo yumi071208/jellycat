@@ -1,0 +1,56 @@
+<nav class="jm-nav">
+  <div class="jm-nav-inner">
+    <a class="jm-logo" href="/">JellyMart</a>
+
+    <form class="jm-nav-search" action="/shopping" method="GET">
+      <span>Search</span>
+      <input type="text" name="search" placeholder="Search for products">
+    </form>
+
+    <div class="jm-nav-links">
+      <a href="/shopping">Shop</a>
+      <a href="/faq">FAQ</a>
+      <% if (user) { %>
+        <a href="/cart">Cart <% if (user.cartCount) { %>(<%= user.cartCount %>)<% } %></a>
+        <% if (user.role === 'admin') { %>
+          <a href="/admin/inventory">Inventory</a>
+        <% } %>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register" class="jm-nav-cta">Sign Up</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<script>
+  window.__flashMessages = <%- JSON.stringify(flash || {}) %>;
+</script>
+
+<div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+  (function () {
+    const container = document.querySelector(".toast-container");
+    if (!container || !window.__flashMessages) return;
+
+    const entries = [];
+    Object.keys(window.__flashMessages).forEach((key) => {
+      const messages = window.__flashMessages[key] || [];
+      messages.forEach((msg) => entries.push({ type: key, text: msg }));
+    });
+
+    const createToast = (type, text) => {
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      toast.textContent = text;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 4000);
+    };
+
+    entries.forEach((entry) => createToast(entry.type, entry.text));
+  })();
+</script>

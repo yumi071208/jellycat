@@ -15,9 +15,8 @@ const UserController = {
       role: req.body.role
     };
 
-    User.create(user, (err, result) => {
+    User.create(user, (err) => {
       if (err) {
-        console.error(err);
         req.flash('error', 'Registration failed');
         return res.redirect('/register');
       }
@@ -40,23 +39,22 @@ const UserController = {
 
     User.findByEmailAndPassword(email, password, (err, user) => {
       if (err) {
-        console.error(err);
         req.flash('error', 'Login failed');
         return res.redirect('/login');
       }
 
       if (user) {
         req.session.user = user;
-        req.flash('success', 'Login successful!');
-        if (user.role === 'user') {
-          res.redirect('/shopping');
-        } else {
-          res.redirect('/inventory');
+
+        // Redirect based on role
+        if (user.role === 'admin') {
+          return res.redirect('/admin');   // FIXED
         }
-      } else {
-        req.flash('error', 'Invalid email or password.');
-        res.redirect('/login');
+        return res.redirect('/shopping');
       }
+
+      req.flash('error', 'Invalid email or password.');
+      res.redirect('/login');
     });
   },
 

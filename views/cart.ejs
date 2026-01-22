@@ -2,64 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Cart</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Navbar -->
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">Supermarket App</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/shopping">Shop</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/cart">View Cart</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li> 
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- Cart Content -->
-  <div class="container">
-    <h2 class="mt-4">Shopping Cart</h2>
-    <% if (cart.length === 0) { %>
-      <p>Your cart is empty.</p>
-    <% } else { %>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% let total = 0; %>
-          <% for (let i = 0; i < cart.length; i++) { %>
-            <tr>
-                <td><%= cart[i].productName %></td>
-                <td><img src="/images/<%= cart[i].image %>" width="80" class="img-thumbnail"></td>
-                <td><%= cart[i].quantity %></td>
-                <td>$<%= (cart[i].price * cart[i].quantity).toFixed(2) %></td>
-            </tr>
-            <% total += cart[i].price * cart[i].quantity; %>
-          <% }; %>
-        </tbody>
-      </table>
-      <h4>Total: $<%= total.toFixed(2) %></h4>
+  <title>Your Cart | JellyMart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      <div class="mt-4">
-        <a href="/shopping" class="btn btn-secondary">Back to Shopping</a>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/theme.css">
+</head>
+
+<body>
+  <%- include('navbar') %>
+
+  <div class="container my-5" style="max-width: 1000px;">
+    <div class="section-title mb-4">
+      <span>Your Cart</span>
+      <a href="/shopping">Continue shopping</a>
+    </div>
+
+    <% if (cart.length === 0) { %>
+      <div class="layout-card text-center">
+        <h5 class="mb-2">Your cart is empty</h5>
+        <p class="text-muted mb-4">Browse the store and add items you love.</p>
+        <a href="/shopping" class="pastel-btn px-4">Start Shopping</a>
+      </div>
+    <% } else { %>
+      <div class="layout-card mb-4">
+        <% let total = 0; %>
+        <% cart.forEach(item => { %>
+          <div class="row align-items-center py-3 border-bottom">
+            <div class="col-3 col-md-2 text-center">
+              <img src="/images/<%= item.image %>" alt="<%= item.productName %>" class="img-fluid rounded" style="max-height: 80px; object-fit: contain;">
+            </div>
+
+            <div class="col-9 col-md-4">
+              <strong><%= item.productName %></strong>
+              <div class="text-muted small">$<%= Number(item.price).toFixed(2) %> each</div>
+            </div>
+
+            <div class="col-6 col-md-2 mt-3 mt-md-0">
+              <form action="/cart/update/<%= item.cart_id %>" method="POST">
+                <select class="form-select form-select-sm" name="quantity" onchange="this.form.submit()">
+                  <% for (let q = 1; q <= Math.max(5, item.quantity); q++) { %>
+                    <option value="<%= q %>" <%= item.quantity == q ? 'selected' : '' %>><%= q %></option>
+                  <% } %>
+                </select>
+              </form>
+            </div>
+
+            <div class="col-4 col-md-2 mt-3 mt-md-0">
+              <strong>$<%= (item.price * item.quantity).toFixed(2) %></strong>
+            </div>
+
+            <div class="col-2 col-md-2 text-end mt-3 mt-md-0">
+              <a href="/cart/remove/<%= item.cart_id %>" class="pastel-secondary-btn btn-sm">Remove</a>
+            </div>
+          </div>
+          <% total += item.price * item.quantity; %>
+        <% }) %>
+      </div>
+
+      <div class="layout-card d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <div class="mb-3 mb-md-0">
+          <h4 class="mb-0">Total: <span class="text-primary">$<%= total.toFixed(2) %></span></h4>
+          <p class="text-muted small mb-0">Taxes and discounts calculated at checkout</p>
+        </div>
+
+        <div class="d-flex gap-3">
+          <a href="/shopping" class="pastel-secondary-btn px-4">Continue Shopping</a>
+          <a href="/checkout" class="pastel-btn px-4">Checkout</a>
+        </div>
       </div>
     <% } %>
   </div>
