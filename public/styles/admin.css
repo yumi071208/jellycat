@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
+:root {
+  --admin-ink: #1f2614;
+  --admin-ink-soft: #47513a;
+  --admin-olive: #2f3a1f;
+  --admin-olive-strong: #3b5b2a;
+  --admin-olive-soft: #e7edd9;
+  --admin-cream: #f4f6f2;
+  --admin-card: #ffffff;
+  --admin-border: #d9e2c5;
+  --admin-shadow: 0 10px 26px rgba(34, 45, 16, 0.12);
+}
+
+body.admin-body {
+  background: var(--admin-cream);
+  font-family: "Manrope", sans-serif;
+  color: var(--admin-ink);
+}
+
+.admin-nav {
+  background: var(--admin-olive);
+  color: #f8f6ee;
+  padding: 12px 26px;
+}
+
+.admin-nav a {
+  color: #f8f6ee;
+  text-decoration: none;
+}
+
+.admin-nav .brand {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: 0.03em;
+}
+
+.admin-links {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 18px 60px;
+}
+
+.admin-title {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.admin-subtitle {
+  color: var(--admin-ink-soft);
+  font-size: 14px;
+}
+
+.admin-card {
+  background: var(--admin-card);
+  border-radius: 18px;
+  border: 1px solid var(--admin-border);
+  padding: 20px;
+  box-shadow: var(--admin-shadow);
+}
+
+.admin-card + .admin-card {
+  margin-top: 18px;
+}
+
+.admin-stat {
+  text-align: center;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--admin-border);
+  background: #ffffff;
+}
+
+.admin-stat h3 {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+.admin-btn {
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  padding: 10px 16px;
+}
+
+.admin-btn-primary {
+  background: var(--admin-olive-strong);
+  color: #f8f6ee;
+  border: none;
+}
+
+.admin-btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.admin-btn-secondary {
+  background: #e8ecdd;
+  color: var(--admin-olive-strong);
+  border: none;
+}
+
+.admin-btn-danger {
+  background: #b23b3b;
+  color: #ffffff;
+  border: none;
+}
+
+.admin-table {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.admin-table thead {
+  background: #eef1e2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 12px;
+}
+
+.admin-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-badge-success {
+  background: #dcead2;
+  color: #2b5f1e;
+}
+
+.admin-badge-warn {
+  background: #f3e7bf;
+  color: #7a5c14;
+}
+
+.admin-badge-danger {
+  background: #f2d1d1;
+  color: #8a1f1f;
+}
+
+.admin-form label {
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .admin-links {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

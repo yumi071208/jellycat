@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NETS QR Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/theme.css">
+</head>
+<body>
+  <%- include('navbar') %>
+
+  <div class="container my-5" style="max-width: 720px;">
+    <div class="layout-card text-center">
+      <h2 class="mb-2">Scan the QR Code</h2>
+      <p class="text-muted" id="status">Scan with your bank simulator app to complete payment</p>
+      <img src="<%= qrImage || qrCode %>" alt="QR Code" width="300" height="300" />
+      <p class="mt-3"><strong>Order ID:</strong> <%= orderId %></p>
+      <p><strong>Amount:</strong> $<%= amount %></p>
+      <p id="timer">Time remaining: 5:00</p>
+
+      <div class="mt-3">
+        <a href="/checkout" class="pastel-secondary-btn">Cancel</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const paymentId = "<%= paymentId %>";
+    const orderId = "<%= orderId %>";
+    let checkInterval;
+
+    function checkPaymentStatus() {
+      fetch(`/payment/nets/status/${paymentId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && (data.status === 'SUCCESS' || data.status === 'COMPLETED' || data.status === 'AUTHORIZED')) {
+            clearInterval(checkInterval);
+            window.location.href = `/payment/nets/success?payment_id=${paymentId}`;
+          }
+        })
+        .catch(err => console.error('Status check failed:', err));
+    }
+
+    checkInterval = setInterval(checkPaymentStatus, 2000);
+
+    const timerElement = document.getElementById('timer');
+    const countdownDuration = 300;
+    let remainingTime = countdownDuration;
+
+    const updateTimer = () => {
+      const minutes = Math.floor(remainingTime / 60);
+      const seconds = remainingTime % 60;
+      timerElement.textContent = `Time remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      remainingTime--;
+
+      if (remainingTime < 0) {
+        clearInterval(timerInterval);
+        clearInterval(checkInterval);
+        timerElement.textContent = 'Transaction timed out.';
+        window.location.href = `/payment/nets/failed?error=Timeout`;
+      }
+    };
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer();
+  </script>
+</body>
+</html>
