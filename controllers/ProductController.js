@@ -317,7 +317,7 @@ const ProductController = {
 
   showOrderHistory: function (req, res) {
     Product.getUserOrders(req.session.user.id, (err, orders) => {
-      res.render("orderHistory", {
+      res.render("orderhistory", {
         orders,
         user: req.session.user
       });
