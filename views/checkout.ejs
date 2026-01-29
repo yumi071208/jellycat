@@ -86,7 +86,7 @@
             <label class="payment-option d-flex align-items-center gap-2">
               <input type="radio" name="payment_method" value="PAYPAL" form="checkout-form" required>
               <img src="/images/paypal-logo.png" style="height:20px;" alt="PayPal">
-              <span>PayPal (Sandbox)</span>
+              <span>PayPal (Card)</span>
             </label>
 
             <label class="payment-option d-flex align-items-center gap-2">
@@ -98,7 +98,13 @@
             <label class="payment-option d-flex align-items-center gap-2">
               <input type="radio" name="payment_method" value="STRIPE" form="checkout-form">
               <img src="/images/stripe-logo.png" style="height:20px;" alt="Stripe">
-              <span>Stripe (Card)</span>
+              <span>Stripe (Card, Link, PayNow QR)</span>
+            </label>
+
+            <label class="payment-option d-flex align-items-center gap-2">
+              <input type="radio" name="payment_method" value="AIRWALLEX" form="checkout-form">
+              <img src="/images/airwallex.png" style="height:20px;" alt="Airwallex">
+              <span>Airwallex (Card, Alipay, WeChat Pay)</span>
             </label>
             <input type="hidden" name="payment_method_fallback" id="payment-method-fallback" form="checkout-form" value="">
             </div>

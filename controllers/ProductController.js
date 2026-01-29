@@ -201,7 +201,8 @@ const ProductController = {
       PAYPAL: "PAYPAL",
       NETS: "NETS_QR",
       NETS_QR: "NETS_QR",
-      STRIPE: "STRIPE"
+      STRIPE: "STRIPE",
+      AIRWALLEX: "AIRWALLEX"
     };
     const payment_method = paymentMap[paymentNormalized] || "";
 
@@ -250,6 +251,10 @@ const ProductController = {
 
       if (payment_method === "STRIPE") {
         return res.redirect("/payment/stripe/redirect");
+      }
+
+      if (payment_method === "AIRWALLEX") {
+        return res.redirect("/payment/airwallex/redirect");
       }
 
       req.session.message = "Unsupported payment method.";
