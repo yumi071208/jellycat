@@ -99,7 +99,11 @@ const ProductController = {
     const qtyRequested = parseInt(req.body.quantity);
 
     Product.getCart(req.session.user.id, (err, cart) => {
+<<<<<<< HEAD
       const item = cart.find(i => i.cartItemId == cartItemId);
+=======
+      const item = cart.find(i => i.cart_id == cartItemId);
+>>>>>>> feature/payment-methods
       if (!item) return res.redirect("/cart");
 
       const stock = parseInt(item.quantity_available);
@@ -194,7 +198,21 @@ const ProductController = {
 
   processCheckout: function (req, res) {
     const userId = req.session.user.id;
+<<<<<<< HEAD
     const { delivery_method, address, payment_method } = req.body;
+=======
+    const { delivery_method, address } = req.body;
+    const paymentRaw = req.body.payment_method || req.body.payment_method_fallback || "";
+    const paymentNormalized = paymentRaw.toString().trim().toUpperCase();
+    const paymentMap = {
+      PAYPAL: "PAYPAL",
+      NETS: "NETS_QR",
+      NETS_QR: "NETS_QR",
+      STRIPE: "STRIPE",
+      AIRWALLEX: "AIRWALLEX"
+    };
+    const payment_method = paymentMap[paymentNormalized] || "";
+>>>>>>> feature/payment-methods
 
     if (!delivery_method) {
       req.session.message = "Please select a delivery method.";
@@ -243,6 +261,15 @@ const ProductController = {
         return res.redirect("/payment/stripe/redirect");
       }
 
+<<<<<<< HEAD
+=======
+      if (payment_method === "AIRWALLEX") {
+        return res.redirect("/payment/airwallex/redirect");
+      }
+
+      req.session.message = "Unsupported payment method.";
+      req.flash('error', 'Unsupported payment method.');
+>>>>>>> feature/payment-methods
       res.redirect("/checkout");
     });
   },
@@ -306,7 +333,11 @@ const ProductController = {
 
   showOrderHistory: function (req, res) {
     Product.getUserOrders(req.session.user.id, (err, orders) => {
+<<<<<<< HEAD
       res.render("orderHistory", {
+=======
+      res.render("orderhistory", {
+>>>>>>> feature/payment-methods
         orders,
         user: req.session.user
       });

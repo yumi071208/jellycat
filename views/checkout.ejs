@@ -84,6 +84,7 @@
               </div>
 
             <label class="payment-option d-flex align-items-center gap-2">
+<<<<<<< HEAD
               <input type="radio" name="payment_method" value="PAYPAL" required>
               <img src="/images/paypal-logo.png" style="height:20px;" alt="PayPal">
               <span>PayPal (Sandbox)</span>
@@ -91,15 +92,38 @@
 
             <label class="payment-option d-flex align-items-center gap-2">
               <input type="radio" name="payment_method" value="NETS_QR">
+=======
+              <input type="radio" name="payment_method" value="PAYPAL" form="checkout-form" required>
+              <img src="/images/paypal-logo.png" style="height:20px;" alt="PayPal">
+              <span>PayPal (Card)</span>
+            </label>
+
+            <label class="payment-option d-flex align-items-center gap-2">
+              <input type="radio" name="payment_method" value="NETS_QR" form="checkout-form">
+>>>>>>> feature/payment-methods
               <img src="/images/nets-logo.png" style="height:20px;" alt="NETS">
               <span>NETS QR (Scan to Pay)</span>
             </label>
 
             <label class="payment-option d-flex align-items-center gap-2">
+<<<<<<< HEAD
               <input type="radio" name="payment_method" value="STRIPE">
               <img src="/images/stripe-logo.png" style="height:20px;" alt="Stripe">
               <span>Stripe (Card)</span>
             </label>
+=======
+              <input type="radio" name="payment_method" value="STRIPE" form="checkout-form">
+              <img src="/images/stripe-logo.png" style="height:20px;" alt="Stripe">
+              <span>Stripe (Card, Link, PayNow QR)</span>
+            </label>
+
+            <label class="payment-option d-flex align-items-center gap-2">
+              <input type="radio" name="payment_method" value="AIRWALLEX" form="checkout-form">
+              <img src="/images/airwallex.png" style="height:20px;" alt="Airwallex">
+              <span>Airwallex (Card, Alipay, WeChat Pay)</span>
+            </label>
+            <input type="hidden" name="payment_method_fallback" id="payment-method-fallback" form="checkout-form" value="">
+>>>>>>> feature/payment-methods
             </div>
           </div>
 
@@ -147,7 +171,11 @@
               </div>
 
               <div class="d-grid mt-4">
+<<<<<<< HEAD
                 <button class="pastel-btn btn-lg" id="proceed-btn" disabled>Proceed to Payment</button>
+=======
+                <button type="submit" class="pastel-btn btn-lg" id="proceed-btn" disabled>Proceed to Payment</button>
+>>>>>>> feature/payment-methods
                 <div class="form-text text-muted mt-2" id="payment-helper" aria-live="polite">
                   Select a payment method to continue.
                 </div>
@@ -175,11 +203,23 @@
       const addressError = document.getElementById("address-error");
       const deliveryHelper = document.getElementById("delivery-helper");
       const pickupHelper = document.getElementById("pickup-helper");
+<<<<<<< HEAD
+=======
+      const paymentFallback = document.getElementById("payment-method-fallback");
+      const paymentOptions = Array.from(form.querySelectorAll(".payment-option"));
+>>>>>>> feature/payment-methods
 
       const updateProceedState = () => {
         const isPickup = deliveryInput.value === "pickup";
         const addressValid = isPickup ? true : addressInput.value.trim().length > 0;
         const paymentSelected = paymentInputs.some((input) => input.checked);
+<<<<<<< HEAD
+=======
+        if (paymentFallback) {
+          const selected = paymentInputs.find((input) => input.checked);
+          paymentFallback.value = selected ? selected.value : "";
+        }
+>>>>>>> feature/payment-methods
 
         addressInput.setAttribute("aria-invalid", String(!addressValid));
         addressError.classList.toggle("d-none", addressValid);
@@ -213,11 +253,22 @@
           }
           if (stored.payment) {
             const target = paymentInputs.find((input) => input.value === stored.payment);
+<<<<<<< HEAD
             if (target) target.checked = true;
           }
         } catch (err) {
           localStorage.removeItem("jm_checkout");
         }
+=======
+          if (target) target.checked = true;
+        }
+        if (paymentFallback) {
+          paymentFallback.value = stored.payment || "";
+        }
+      } catch (err) {
+        localStorage.removeItem("jm_checkout");
+      }
+>>>>>>> feature/payment-methods
       };
 
       paymentInputs.forEach((input) => {
@@ -227,6 +278,20 @@
         });
       });
 
+<<<<<<< HEAD
+=======
+      paymentOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          const input = option.querySelector("input[name='payment_method']");
+          if (input && !input.disabled) {
+            input.checked = true;
+            updateProceedState();
+            saveState();
+          }
+        });
+      });
+
+>>>>>>> feature/payment-methods
       addressInput.addEventListener("input", () => {
         updateProceedState();
         saveState();
@@ -238,8 +303,17 @@
       });
 
       form.addEventListener("submit", (event) => {
+<<<<<<< HEAD
         updateProceedState();
         if (proceedBtn.disabled) {
+=======
+        const selected = paymentInputs.find((input) => input.checked);
+        if (paymentFallback) {
+          paymentFallback.value = selected ? selected.value : "";
+        }
+        updateProceedState();
+        if (proceedBtn.disabled || !selected) {
+>>>>>>> feature/payment-methods
           event.preventDefault();
         } else {
           localStorage.removeItem("jm_checkout");

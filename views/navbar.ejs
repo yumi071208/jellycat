@@ -12,6 +12,10 @@
       <a href="/faq">FAQ</a>
       <% if (user) { %>
         <a href="/cart">Cart <% if (user.cartCount) { %>(<%= user.cartCount %>)<% } %></a>
+<<<<<<< HEAD
+=======
+        <a href="/orders">My Orders</a>
+>>>>>>> feature/payment-methods
         <% if (user.role === 'admin') { %>
           <a href="/admin/inventory">Inventory</a>
         <% } %>

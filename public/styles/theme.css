@@ -324,6 +324,36 @@ body.storefront {
   box-shadow: none;
 }
 
+<<<<<<< HEAD
+=======
+/* -------- OTP (Mock 2FA) -------- */
+.otp-inputs {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.otp-input {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 1px solid #d7ddbf;
+  background: #ffffff;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink-900);
+  box-shadow: 0 6px 14px rgba(25, 38, 6, 0.08);
+}
+
+.otp-input:focus {
+  border-color: #a7bb2f;
+  box-shadow: 0 0 0 3px rgba(167, 187, 47, 0.2);
+  outline: none;
+}
+
+>>>>>>> feature/payment-methods
 /* -------- STORE FRONT -------- */
 .store-shell {
   background: #ffffff;

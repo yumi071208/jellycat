@@ -155,6 +155,18 @@ const Product = {
   },
 
   // ========= REQUIRED FOR INVOICE ========= //
+<<<<<<< HEAD
+=======
+  updateOrderPayment: function(orderId, paymentStatus, paymentMethod, paymentReference, callback) {
+    const sql = `
+      UPDATE orders
+      SET payment_status = ?, payment_method = ?, payment_reference = ?
+      WHERE id = ?
+    `;
+    db.query(sql, [paymentStatus, paymentMethod, paymentReference, orderId], callback);
+  },
+
+>>>>>>> feature/payment-methods
   getOrderById: function(orderId, callback) {
     const sql = `
       SELECT o.*, u.username, u.email

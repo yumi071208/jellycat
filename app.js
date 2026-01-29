@@ -17,6 +17,15 @@ const Product = require('./models/Product');
 const paypal = require('./services/paypal');
 const NETS = require('./services/nets-api');
 const stripe = require('./services/stripe');
+<<<<<<< HEAD
+=======
+const airwallex = require('./services/airwallex');
+
+const NETS_API_KEY = process.env.API_KEY;
+const NETS_PROJECT_ID = process.env.PROJECT_ID;
+const BASE_URL =
+  process.env.NETS_BASE_URL || 'https://sandbox.nets.openapipaas.com';
+>>>>>>> feature/payment-methods
 
 // ===== Multer =====
 const storage = multer.diskStorage({
@@ -47,7 +56,12 @@ app.use((req, res, next) => {
 // User middleware
 app.use((req, res, next) => {
     if (req.session.user) {
+<<<<<<< HEAD
         const userId = req.session.user.id;
+=======
+      const paymentReference = session.payment_intent || session.id;
+      const userId = req.session.user.id;
+>>>>>>> feature/payment-methods
         Product.getCart(userId, (err, cart) => {
             req.session.user.cartCount = cart ? cart.length : 0;
             res.locals.user = req.session.user;
@@ -74,6 +88,10 @@ app.get('/register', UserController.showRegister);
 app.post('/register', validateRegistration, UserController.register);
 app.get('/login', UserController.showLogin);
 app.post('/login', UserController.login);
+app.get('/login/verify-email', UserController.showVerifyEmail);
+app.post('/login/verify-email', UserController.verifyEmail);
+app.get('/login/verify-phone', UserController.showVerifyPhone);
+app.post('/login/verify-phone', UserController.verifyPhone);
 app.get('/logout', UserController.logout);
 app.get('/faq', (req, res) => res.render('faq', { user: req.session.user }));
 
@@ -166,6 +184,7 @@ app.get('/payment/stripe/success', checkAuthenticated, async (req, res) => {
       return res.redirect('/checkout');
     }
 
+<<<<<<< HEAD
     const session = await stripe.retrieveSession(sessionId);
     if (session.payment_status !== 'paid') {
       req.flash('error', 'Stripe payment not completed');
@@ -176,6 +195,19 @@ app.get('/payment/stripe/success', checkAuthenticated, async (req, res) => {
     const cart = req.session.paymentCart;
     const checkoutData = req.session.checkoutData || {};
     const total = req.session.paymentAmount;
+=======
+      const session = await stripe.retrieveSession(sessionId);
+      if (session.payment_status !== 'paid') {
+        req.flash('error', 'Stripe payment not completed');
+        return res.redirect('/checkout');
+      }
+
+      const paymentReference = session.payment_intent || session.id;
+      const userId = req.session.user.id;
+      const cart = req.session.paymentCart;
+      const checkoutData = req.session.checkoutData || {};
+      const total = req.session.paymentAmount;
+>>>>>>> feature/payment-methods
 
     const items = cart.map(i => ({
       product_id: i.id,
@@ -196,6 +228,7 @@ app.get('/payment/stripe/success', checkAuthenticated, async (req, res) => {
           return res.redirect('/checkout');
         }
 
+<<<<<<< HEAD
         Product.clearCart(userId, () => {
           req.session.paymentCart = null;
           req.session.paymentAmount = null;
@@ -204,6 +237,29 @@ app.get('/payment/stripe/success', checkAuthenticated, async (req, res) => {
           req.session.stripeSessionId = null;
           res.redirect('/invoice/' + dbOrderId);
         });
+=======
+        Product.updateOrderPayment(
+          dbOrderId,
+          'PAID',
+          'STRIPE',
+          paymentReference,
+          (updateErr) => {
+            if (updateErr) {
+              req.flash('error', 'Payment update failed');
+              return res.redirect('/checkout');
+            }
+
+            Product.clearCart(userId, () => {
+              req.session.paymentCart = null;
+              req.session.paymentAmount = null;
+              req.session.checkoutData = null;
+              req.session.voucher = null;
+              req.session.stripeSessionId = null;
+              res.redirect('/invoice/' + dbOrderId);
+            });
+          }
+        );
+>>>>>>> feature/payment-methods
       }
     );
   } catch (err) {
@@ -218,6 +274,133 @@ app.get('/payment/stripe/cancel', checkAuthenticated, (req, res) => {
   res.redirect('/checkout');
 });
 
+<<<<<<< HEAD
+=======
+// ===============================
+// AIRWALLEX ROUTES
+// ===============================
+app.get('/payment/airwallex/redirect', checkAuthenticated, async (req, res) => {
+  try {
+    const cart = req.session.paymentCart;
+    const total = req.session.paymentAmount;
+    if (!cart || cart.length === 0 || !total) {
+      req.flash('error', 'No payment amount');
+      return res.redirect('/checkout');
+    }
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+    const orderId = `AIRWALLEX_${Date.now()}_${req.session.user.id}`;
+    const intent = await airwallex.createPaymentIntent({
+      amount: total,
+      currency: process.env.AIRWALLEX_CURRENCY || 'SGD',
+      merchantOrderId: orderId,
+      returnUrl: `${baseUrl}/payment/airwallex/success`
+    });
+
+    req.session.airwallexPaymentIntentId = intent.id;
+    req.session.airwallexClientSecret = intent.client_secret;
+
+    res.render('payment/airwallex-redirect', {
+      user: req.session.user,
+      intentId: intent.id,
+      clientSecret: intent.client_secret,
+      currency: process.env.AIRWALLEX_CURRENCY || 'SGD',
+      countryCode: process.env.AIRWALLEX_COUNTRY || 'SG',
+      airwallexEnv: process.env.AIRWALLEX_ENV || 'demo',
+      successUrl: `${baseUrl}/payment/airwallex/success`,
+      failUrl: `${baseUrl}/payment/airwallex/cancel`
+    });
+  } catch (err) {
+    req.flash('error', 'Airwallex failed');
+    res.redirect('/checkout');
+  }
+});
+
+app.get('/payment/airwallex/success', checkAuthenticated, async (req, res) => {
+  try {
+    const intentId =
+      req.query.intent_id ||
+      req.query.intentId ||
+      req.query.payment_intent_id ||
+      req.query.id ||
+      req.session.airwallexPaymentIntentId;
+
+    if (!intentId) {
+      req.flash('error', 'No Airwallex payment intent');
+      return res.redirect('/checkout');
+    }
+
+    const intent = await airwallex.retrievePaymentIntent(intentId);
+    const status = (intent.status || '').toUpperCase();
+    if (status !== 'SUCCEEDED' && status !== 'AUTHORIZED') {
+      req.flash('error', 'Airwallex payment not completed');
+      return res.redirect('/checkout');
+    }
+
+    const paymentReference =
+      intent.latest_payment_attempt?.id || intent.id || intentId;
+    const userId = req.session.user.id;
+    const cart = req.session.paymentCart;
+    const checkoutData = req.session.checkoutData || {};
+    const total = req.session.paymentAmount;
+
+    const items = cart.map(i => ({
+      product_id: i.id,
+      quantity: i.quantity,
+      price: i.price
+    }));
+
+    Product.createOrder(
+      userId,
+      checkoutData.delivery_method || 'standard',
+      checkoutData.address || '',
+      'AIRWALLEX',
+      total,
+      items,
+      (err, dbOrderId) => {
+        if (err) {
+          req.flash('error', 'Order failed');
+          return res.redirect('/checkout');
+        }
+
+        Product.updateOrderPayment(
+          dbOrderId,
+          'PAID',
+          'AIRWALLEX',
+          paymentReference,
+          (updateErr) => {
+            if (updateErr) {
+              req.flash('error', 'Payment update failed');
+              return res.redirect('/checkout');
+            }
+
+            Product.clearCart(userId, () => {
+              req.session.paymentCart = null;
+              req.session.paymentAmount = null;
+              req.session.checkoutData = null;
+              req.session.voucher = null;
+              req.session.airwallexPaymentIntentId = null;
+              req.session.airwallexClientSecret = null;
+              res.redirect('/invoice/' + dbOrderId);
+            });
+          }
+        );
+      }
+    );
+  } catch (err) {
+    req.flash('error', 'Airwallex payment failed');
+    res.redirect('/checkout');
+  }
+});
+
+app.get('/payment/airwallex/cancel', checkAuthenticated, (req, res) => {
+  req.session.airwallexPaymentIntentId = null;
+  req.session.airwallexClientSecret = null;
+  req.flash('error', 'Airwallex payment cancelled');
+  res.redirect('/checkout');
+});
+
+>>>>>>> feature/payment-methods
 app.get('/payment/paypal/success', checkAuthenticated, async (req, res) => {
     try {
         const { token } = req.query;
@@ -229,6 +412,10 @@ app.get('/payment/paypal/success', checkAuthenticated, async (req, res) => {
         
         const capture = await paypal.captureOrder(orderId);
         if (capture.status === "COMPLETED") {
+<<<<<<< HEAD
+=======
+            const paymentReference = capture.id || orderId;
+>>>>>>> feature/payment-methods
             const userId = req.session.user.id;
             const cart = req.session.paymentCart;
             const checkoutData = req.session.checkoutData || {};
@@ -253,6 +440,7 @@ app.get('/payment/paypal/success', checkAuthenticated, async (req, res) => {
                         return res.redirect('/checkout');
                     }
                     
+<<<<<<< HEAD
                     Product.clearCart(userId, () => {
                         req.session.paymentCart = null;
                         req.session.paymentAmount = null;
@@ -261,6 +449,29 @@ app.get('/payment/paypal/success', checkAuthenticated, async (req, res) => {
                         req.session.paypalOrderId = null;
                         res.redirect('/invoice/' + dbOrderId);
                     });
+=======
+                    Product.updateOrderPayment(
+                        dbOrderId,
+                        'PAID',
+                        'PAYPAL',
+                        paymentReference,
+                        (updateErr) => {
+                            if (updateErr) {
+                                req.flash('error', 'Payment update failed');
+                                return res.redirect('/checkout');
+                            }
+
+                            Product.clearCart(userId, () => {
+                                req.session.paymentCart = null;
+                                req.session.paymentAmount = null;
+                                req.session.checkoutData = null;
+                                req.session.voucher = null;
+                                req.session.paypalOrderId = null;
+                                res.redirect('/invoice/' + dbOrderId);
+                            });
+                        }
+                    );
+>>>>>>> feature/payment-methods
                 }
             );
         }
@@ -477,6 +688,7 @@ app.get('/payment/nets/success', checkAuthenticated, async (req, res) => {
           console.log('✅ Order created:', dbOrderId);
           
           // 清空购物车
+<<<<<<< HEAD
           Product.clearCart(userId, () => {
             // 清理session
             req.session.paymentCart = null;
@@ -490,6 +702,35 @@ app.get('/payment/nets/success', checkAuthenticated, async (req, res) => {
             console.log('✅ Redirecting to invoice:', dbOrderId);
             res.redirect('/invoice/' + dbOrderId);
           });
+=======
+                    Product.updateOrderPayment(
+            dbOrderId,
+            'PAID',
+            'NETS_QR',
+            paymentId,
+            (updateErr) => {
+              if (updateErr) {
+                console.error('??? Payment update failed:', updateErr);
+                return res.redirect('/payment/nets/failed?error=Payment+update+failed');
+              }
+
+              // ???????????????
+              Product.clearCart(userId, () => {
+                // ??????session
+                req.session.paymentCart = null;
+                req.session.paymentAmount = null;
+                req.session.checkoutData = null;
+                req.session.voucher = null;
+                req.session.netsPaymentId = null;
+                req.session.netsOrderId = null;
+                req.session.netsPaymentData = null;
+                
+                console.log('??? Redirecting to invoice:', dbOrderId);
+                res.redirect('/invoice/' + dbOrderId);
+              });
+            }
+          );
+>>>>>>> feature/payment-methods
         }
       );
     } else {
