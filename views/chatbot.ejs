@@ -1,0 +1,100 @@
+<button class="chatbot-float" type="button" aria-label="Open assistant" aria-expanded="false">
+  <span aria-hidden="true">?</span>
+</button>
+
+<div class="chatbot-widget" role="dialog" aria-label="Assistant">
+  <div class="chatbot-header">
+    <span class="chatbot-title">Assistant</span>
+    <button class="chatbot-close" type="button">Close</button>
+  </div>
+
+  <div class="chatbot-body">
+    <div class="chatbot-message bot">
+      Hi - I'm the Supermarket helper. Ask about products, your cart, or checkout.
+    </div>
+  </div>
+
+  <div class="chatbot-footer">
+    <div class="chatbot-quick">
+      <button class="chatbot-chip" type="button" data-question="how many products">how many products</button>
+      <button class="chatbot-chip" type="button" data-question="checkout options">checkout options</button>
+      <button class="chatbot-chip" type="button" data-question="delivery hours">delivery hours</button>
+    </div>
+    <form class="chatbot-input" autocomplete="off">
+      <input type="text" name="message" placeholder="Type your question..." aria-label="Type your question">
+      <button type="submit" aria-label="Send">Send</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const toggle = document.querySelector(".chatbot-float");
+    const panel = document.querySelector(".chatbot-widget");
+    const closeBtn = document.querySelector(".chatbot-close");
+    const body = panel ? panel.querySelector(".chatbot-body") : null;
+    const chips = panel ? panel.querySelectorAll(".chatbot-chip") : [];
+    const form = panel ? panel.querySelector(".chatbot-input") : null;
+    const input = form ? form.querySelector("input[name='message']") : null;
+    if (!toggle || !panel) return;
+
+    const setOpen = (open) => {
+      panel.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+
+    const answers = {
+      "how many products": "All available products are shown on the Shop page.",
+      "checkout options": "You can checkout with PayPal, NETS QR, Stripe card checkout, or Airwallex (Alipay/WeChat Pay).",
+      "delivery hours": "Delivery runs daily 10:00-20:00. Self-pickup is also available during these hours."
+    };
+
+    const addMessage = (text, type) => {
+      if (!body) return;
+      const msg = document.createElement("div");
+      msg.className = `chatbot-message ${type}`;
+      msg.textContent = text;
+      body.appendChild(msg);
+      body.scrollTop = body.scrollHeight;
+    };
+
+    const handleQuestion = (raw) => {
+      const text = raw.trim();
+      if (!text) return;
+      addMessage(text.toLowerCase(), "user");
+      const key = text.toLowerCase();
+      const reply = answers[key] || "I am not sure about that. Try: how many products, checkout options, or delivery hours.";
+      addMessage(reply, "bot");
+    };
+
+    toggle.addEventListener("click", () => {
+      const isOpen = panel.classList.contains("is-open");
+      setOpen(!isOpen);
+      if (!isOpen && input) input.focus();
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => setOpen(false));
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const question = chip.getAttribute("data-question") || chip.textContent || "";
+        handleQuestion(question);
+      });
+    });
+
+    if (form && input) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        handleQuestion(input.value);
+        input.value = "";
+        input.focus();
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setOpen(false);
+    });
+  })();
+</script>
