@@ -25,32 +25,6 @@
       <div class="alert alert-warning text-center">Your cart is empty.</div>
       <a href="/shopping" class="pastel-btn">Back to Shopping</a>
     <% } else { %>
-      <div class="layout-card mb-4">
-        <div class="section-title mb-3">
-          <span>Voucher</span>
-        </div>
-
-        <% if (voucher) { %>
-          <div class="alert alert-success d-flex justify-content-between align-items-center">
-            <div>
-              <strong><%= voucher.code %></strong>
-              Discount applied
-            </div>
-            <a href="/remove-voucher" class="pastel-secondary-btn btn-sm">Remove</a>
-          </div>
-        <% } else { %>
-          <form method="POST" action="/apply-voucher" class="row g-2" id="voucher-form">
-            <div class="col-md-8">
-              <input type="text" class="form-control" name="voucherCode" id="voucher-code" placeholder="Enter voucher code" aria-describedby="voucher-error">
-              <div class="form-text text-danger d-none" id="voucher-error">Please enter a voucher code.</div>
-            </div>
-            <div class="col-md-4">
-              <button type="submit" class="pastel-btn w-100">Apply</button>
-            </div>
-          </form>
-        <% } %>
-      </div>
-
       <form method="POST" action="/checkout" id="checkout-form">
         <div class="row g-4">
           <div class="col-md-7">
@@ -59,22 +33,31 @@
                 <span>Delivery Information</span>
               </div>
 
-              <label class="form-label">Delivery Method</label>
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" name="buyer_name" required>
+
+              <label class="form-label mt-3">Email</label>
+              <input type="email" class="form-control" name="buyer_email" required>
+
+              <label class="form-label mt-3">Phone</label>
+              <input type="text" class="form-control" name="buyer_phone" required>
+
+              <label class="form-label mt-3">Delivery Method</label>
               <select class="form-select" name="delivery_method" id="delivery-method" required>
                 <option value="delivery">Delivery</option>
                 <option value="pickup">Self-Pickup</option>
               </select>
               <div class="form-text text-muted mt-2" id="delivery-helper">
-                We'll deliver your order to the address below.
+                We'll deliver your order to the address below. Delivery fee is $4.
               </div>
 
               <label class="form-label mt-3">Address</label>
-              <input type="text" class="form-control" name="address" id="delivery-address" value="<%= user.address || '' %>" required aria-describedby="address-error">
+              <input type="text" class="form-control" name="address" id="delivery-address" required aria-describedby="address-error">
               <div class="form-text text-danger d-none" id="address-error">
                 Please enter a delivery address.
               </div>
               <div class="form-text text-muted d-none" id="pickup-helper">
-                Self-pickup at JellyMart, 123 Market Street. Daily 10:00–20:00. Bring your order ID for verification.
+                Self-pickup at postal code 320115. Daily 10:00–20:00. Bring your order ID for verification.
               </div>
             </div>
 
@@ -82,31 +65,13 @@
               <div class="section-title mb-3">
                 <span>Payment Method</span>
               </div>
-
-            <label class="payment-option d-flex align-items-center gap-2">
-              <input type="radio" name="payment_method" value="PAYPAL" form="checkout-form" required>
-              <img src="/images/paypal-logo.png" style="height:20px;" alt="PayPal">
-              <span>PayPal (Card)</span>
-            </label>
-
-            <label class="payment-option d-flex align-items-center gap-2">
-              <input type="radio" name="payment_method" value="NETS_QR" form="checkout-form">
-              <img src="/images/nets-logo.png" style="height:20px;" alt="NETS">
-              <span>NETS QR (Scan to Pay)</span>
-            </label>
-
-            <label class="payment-option d-flex align-items-center gap-2">
-              <input type="radio" name="payment_method" value="STRIPE" form="checkout-form">
-              <img src="/images/stripe-logo.png" style="height:20px;" alt="Stripe">
-              <span>Stripe (Card, Link, PayNow QR)</span>
-            </label>
-
-            <label class="payment-option d-flex align-items-center gap-2">
-              <input type="radio" name="payment_method" value="AIRWALLEX" form="checkout-form">
-              <img src="/images/airwallex.png" style="height:20px;" alt="Airwallex">
-              <span>Airwallex (Card, Alipay, WeChat Pay)</span>
-            </label>
-            <input type="hidden" name="payment_method_fallback" id="payment-method-fallback" form="checkout-form" value="">
+              <p class="text-muted mb-2"><strong>Complete Payment via PayNow</strong></p>
+              <p class="text-muted mb-3">Please scan the PayNow QR code to make payment.</p>
+              <img src="/images/paynow-qr.png" alt="PayNow QR" style="max-width: 220px;" class="mb-3">
+              <p class="text-muted mb-2">
+                After payment, click the button below to message <strong>@dog_miao</strong> on Telegram with your payment screenshot and order details.
+              </p>
+              <input type="hidden" name="payment_method" value="PayNow">
             </div>
           </div>
 
@@ -136,28 +101,24 @@
                 <span>$<%= subtotal.toFixed(2) %></span>
               </div>
 
-              <% if (voucher) { %>
-                <div class="d-flex justify-content-between small text-success">
-                  <span>Voucher</span>
-                  <span>-$<%= voucher.calculatedDiscount.toFixed(2) %></span>
-                </div>
-              <% } %>
-
               <% 
-                let discount = voucher ? voucher.calculatedDiscount : 0;
-                let total = Math.max(0, subtotal - discount);
+                let baseTotal = Math.max(0, subtotal);
+                let deliveryFee = 4;
+                let total = baseTotal + deliveryFee;
               %>
+
+              <div class="d-flex justify-content-between small">
+                <span>Delivery Fee</span>
+                <span id="delivery-fee">$<%= deliveryFee.toFixed(2) %></span>
+              </div>
 
               <div class="d-flex justify-content-between fw-semibold mt-2">
                 <span>Total</span>
-                <span class="text-primary">$<%= total.toFixed(2) %></span>
+                <span class="text-primary" id="order-total" data-base-total="<%= baseTotal.toFixed(2) %>">$<%= total.toFixed(2) %></span>
               </div>
 
               <div class="d-grid mt-4">
-                <button type="submit" class="pastel-btn btn-lg" id="proceed-btn" disabled>Proceed to Payment</button>
-                <div class="form-text text-muted mt-2" id="payment-helper" aria-live="polite">
-                  Select a payment method to continue.
-                </div>
+                <button type="submit" class="pastel-btn btn-lg" id="proceed-btn" disabled>I’ve Paid – Message Admin</button>
               </div>
 
               <div class="mt-4">
@@ -172,26 +133,38 @@
 
   <script>
     const form = document.getElementById("checkout-form");
-    const voucherForm = document.getElementById("voucher-form");
     if (form) {
+      const telegramLinkBase = "https://t.me/dog_miao";
+      const cartItems = <%- JSON.stringify(cart.map(i => ({
+        name: i.productName,
+        quantity: i.quantity
+      }))) %>;
       const addressInput = form.querySelector("input[name='address']");
       const deliveryInput = document.getElementById("delivery-method");
-      const paymentInputs = Array.from(form.querySelectorAll("input[name='payment_method']"));
       const proceedBtn = document.getElementById("proceed-btn");
-      const paymentHelper = document.getElementById("payment-helper");
       const addressError = document.getElementById("address-error");
       const deliveryHelper = document.getElementById("delivery-helper");
       const pickupHelper = document.getElementById("pickup-helper");
-      const paymentFallback = document.getElementById("payment-method-fallback");
-      const paymentOptions = Array.from(form.querySelectorAll(".payment-option"));
+      const deliveryFeeEl = document.getElementById("delivery-fee");
+      const totalEl = document.getElementById("order-total");
+      const baseTotal = totalEl ? parseFloat(totalEl.dataset.baseTotal || "0") : 0;
+      const deliveryFeeAmount = 4;
+      const nameInput = form.querySelector("input[name='buyer_name']");
+      const emailInput = form.querySelector("input[name='buyer_email']");
+      const phoneInput = form.querySelector("input[name='buyer_phone']");
 
       const updateProceedState = () => {
         const isPickup = deliveryInput.value === "pickup";
         const addressValid = isPickup ? true : addressInput.value.trim().length > 0;
-        const paymentSelected = paymentInputs.some((input) => input.checked);
-        if (paymentFallback) {
-          const selected = paymentInputs.find((input) => input.checked);
-          paymentFallback.value = selected ? selected.value : "";
+        const paymentSelected = true;
+        const nameValid = nameInput.value.trim().length > 0;
+        const emailValid = emailInput.value.trim().length > 0;
+        const phoneValid = phoneInput.value.trim().length > 0;
+
+        if (deliveryFeeEl && totalEl) {
+          const fee = isPickup ? 0 : deliveryFeeAmount;
+          deliveryFeeEl.textContent = `$${fee.toFixed(2)}`;
+          totalEl.textContent = `$${(baseTotal + fee).toFixed(2)}`;
         }
 
         addressInput.setAttribute("aria-invalid", String(!addressValid));
@@ -200,16 +173,16 @@
         addressInput.required = !isPickup;
         deliveryHelper.classList.toggle("d-none", isPickup);
         pickupHelper.classList.toggle("d-none", !isPickup);
-        proceedBtn.disabled = !(addressValid && paymentSelected);
-        paymentHelper.classList.toggle("d-none", paymentSelected);
+        proceedBtn.disabled = !(addressValid && paymentSelected && nameValid && emailValid && phoneValid);
       };
 
       const saveState = () => {
-        const selectedPayment = paymentInputs.find((input) => input.checked);
         const state = {
           address: addressInput.value,
           delivery: deliveryInput.value,
-          payment: selectedPayment ? selectedPayment.value : ""
+          name: nameInput.value,
+          email: emailInput.value,
+          phone: phoneInput.value
         };
         localStorage.setItem("jm_checkout", JSON.stringify(state));
       };
@@ -224,35 +197,13 @@
           if (stored.delivery) {
             deliveryInput.value = stored.delivery;
           }
-          if (stored.payment) {
-            const target = paymentInputs.find((input) => input.value === stored.payment);
-          if (target) target.checked = true;
-        }
-        if (paymentFallback) {
-          paymentFallback.value = stored.payment || "";
-        }
+        if (stored.name && !nameInput.value) nameInput.value = stored.name;
+        if (stored.email && !emailInput.value) emailInput.value = stored.email;
+        if (stored.phone && !phoneInput.value) phoneInput.value = stored.phone;
       } catch (err) {
         localStorage.removeItem("jm_checkout");
       }
       };
-
-      paymentInputs.forEach((input) => {
-        input.addEventListener("change", () => {
-          updateProceedState();
-          saveState();
-        });
-      });
-
-      paymentOptions.forEach((option) => {
-        option.addEventListener("click", () => {
-          const input = option.querySelector("input[name='payment_method']");
-          if (input && !input.disabled) {
-            input.checked = true;
-            updateProceedState();
-            saveState();
-          }
-        });
-      });
 
       addressInput.addEventListener("input", () => {
         updateProceedState();
@@ -264,35 +215,45 @@
         saveState();
       });
 
+      [nameInput, emailInput, phoneInput].forEach((input) => {
+        input.addEventListener("input", () => {
+          updateProceedState();
+          saveState();
+        });
+      });
+
       form.addEventListener("submit", (event) => {
-        const selected = paymentInputs.find((input) => input.checked);
-        if (paymentFallback) {
-          paymentFallback.value = selected ? selected.value : "";
-        }
         updateProceedState();
-        if (proceedBtn.disabled || !selected) {
+        if (proceedBtn.disabled) {
           event.preventDefault();
         } else {
+          const isPickup = deliveryInput.value === "pickup";
+          const deliveryAddress = isPickup ? "" : addressInput.value.trim();
+          const itemsText = cartItems
+            .map((item) => `- ${item.name} x${item.quantity}`)
+            .join("\n");
+          const totalPaid = totalEl ? totalEl.textContent.replace("$", "").trim() : "";
+          const message =
+            "Hi! I’ve made payment for my Jellycat order 😊\n\n" +
+            `Name: ${nameInput.value.trim()}\n` +
+            `Email: ${emailInput.value.trim()}\n` +
+            `Phone: ${phoneInput.value.trim()}\n\n` +
+            "Items:\n" +
+            `${itemsText}\n\n` +
+            `Total Paid: $${totalPaid}\n` +
+            "Payment Method: PayNow\n\n" +
+            `Delivery Method: ${isPickup ? "Pickup" : "Delivery"}\n` +
+            `Delivery Address: ${deliveryAddress}\n\n` +
+            "I will send the payment screenshot next.";
+
+          const telegramUrl = `${telegramLinkBase}?text=${encodeURIComponent(message)}`;
+          window.open(telegramUrl, "_blank");
           localStorage.removeItem("jm_checkout");
         }
       });
 
       restoreState();
       updateProceedState();
-    }
-
-    if (voucherForm) {
-      const voucherInput = document.getElementById("voucher-code");
-      const voucherError = document.getElementById("voucher-error");
-      voucherForm.addEventListener("submit", (event) => {
-        const value = voucherInput.value.trim();
-        const valid = value.length > 0;
-        voucherInput.setAttribute("aria-invalid", String(!valid));
-        voucherError.classList.toggle("d-none", valid);
-        if (!valid) {
-          event.preventDefault();
-        }
-      });
     }
   </script>
 </body>

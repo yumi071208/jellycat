@@ -1,36 +1,36 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 :root {
-  --admin-ink: #1f2614;
-  --admin-ink-soft: #47513a;
-  --admin-olive: #2f3a1f;
-  --admin-olive-strong: #3b5b2a;
-  --admin-olive-soft: #e7edd9;
-  --admin-cream: #f4f6f2;
+  --admin-ink: #2f2f3a;
+  --admin-ink-soft: #6a6a7a;
+  --admin-olive: #f6b7c9;
+  --admin-olive-strong: #7fa4af;
+  --admin-olive-soft: #e6f2f3;
+  --admin-cream: #fff7fb;
   --admin-card: #ffffff;
-  --admin-border: #d9e2c5;
-  --admin-shadow: 0 10px 26px rgba(34, 45, 16, 0.12);
+  --admin-border: #f3dbe5;
+  --admin-shadow: 0 10px 26px rgba(79, 108, 116, 0.18);
 }
 
 body.admin-body {
   background: var(--admin-cream);
-  font-family: "Manrope", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: var(--admin-ink);
 }
 
 .admin-nav {
   background: var(--admin-olive);
-  color: #f8f6ee;
+  color: var(--admin-ink);
   padding: 12px 26px;
 }
 
 .admin-nav a {
-  color: #f8f6ee;
+  color: var(--admin-ink);
   text-decoration: none;
 }
 
 .admin-nav .brand {
-  font-family: "Fraunces", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 20px;
   letter-spacing: 0.03em;
@@ -52,7 +52,7 @@ body.admin-body {
 }
 
 .admin-title {
-  font-family: "Fraunces", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 26px;
   margin-bottom: 6px;
@@ -99,7 +99,7 @@ body.admin-body {
 
 .admin-btn-primary {
   background: var(--admin-olive-strong);
-  color: #f8f6ee;
+  color: #2f2f3a;
   border: none;
 }
 
@@ -108,13 +108,13 @@ body.admin-body {
 }
 
 .admin-btn-secondary {
-  background: #e8ecdd;
+  background: #fff1f6;
   color: var(--admin-olive-strong);
   border: none;
 }
 
 .admin-btn-danger {
-  background: #b23b3b;
+  background: #d9899f;
   color: #ffffff;
   border: none;
 }
@@ -126,7 +126,7 @@ body.admin-body {
 }
 
 .admin-table thead {
-  background: #eef1e2;
+  background: #ffeef5;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -142,18 +142,18 @@ body.admin-body {
 }
 
 .admin-badge-success {
-  background: #dcead2;
-  color: #2b5f1e;
+  background: #e6f2f3;
+  color: #4b6b74;
 }
 
 .admin-badge-warn {
-  background: #f3e7bf;
-  color: #7a5c14;
+  background: #ffe9d6;
+  color: #8a5a3a;
 }
 
 .admin-badge-danger {
-  background: #f2d1d1;
-  color: #8a1f1f;
+  background: #ffd6e3;
+  color: #8a2f4c;
 }
 
 .admin-form label {

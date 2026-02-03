@@ -3,7 +3,12 @@ const db = require('../db');
 const Voucher = {
   // ADMIN — see all vouchers
   getAll(callback) {
-    db.query("SELECT * FROM vouchers ORDER BY publish_at DESC", callback);
+    db.query("SELECT * FROM vouchers ORDER BY publish_at DESC", (err, rows) => {
+      if (err && err.code === "ER_NO_SUCH_TABLE") {
+        return callback(null, []);
+      }
+      callback(err, rows);
+    });
   },
 
   // USER — only active vouchers
@@ -13,12 +18,20 @@ const Voucher = {
        WHERE publish_at <= NOW()
        AND expire_at >= NOW()
        ORDER BY publish_at DESC`,
-      callback
+      (err, rows) => {
+        if (err && err.code === "ER_NO_SUCH_TABLE") {
+          return callback(null, []);
+        }
+        callback(err, rows);
+      }
     );
   },
 
   getById(id, callback) {
     db.query("SELECT * FROM vouchers WHERE id = ?", [id], (err, rows) => {
+      if (err && err.code === "ER_NO_SUCH_TABLE") {
+        return callback(null, null);
+      }
       callback(err, rows[0]);
     });
   },
@@ -27,7 +40,12 @@ const Voucher = {
     db.query(
       "SELECT * FROM vouchers WHERE code = ? AND expire_at >= NOW()",
       [code],
-      (err, rows) => callback(err, rows[0])
+      (err, rows) => {
+        if (err && err.code === "ER_NO_SUCH_TABLE") {
+          return callback(null, null);
+        }
+        callback(err, rows[0]);
+      }
     );
   },
 
@@ -36,14 +54,18 @@ const Voucher = {
       INSERT INTO vouchers (code, type, amount, minSpend, publish_at, expire_at)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-    db.query(sql, [
-      data.code,
-      data.type,
-      data.amount,
-      data.minSpend,
-      data.publish_at,
-      data.expire_at
-    ], callback);
+    db.query(
+      sql,
+      [
+        data.code,
+        data.type,
+        data.amount,
+        data.minSpend,
+        data.publish_at,
+        data.expire_at
+      ],
+      callback
+    );
   },
 
   update(id, data, callback) {
@@ -52,15 +74,19 @@ const Voucher = {
       SET code=?, type=?, amount=?, minSpend=?, publish_at=?, expire_at=?
       WHERE id=?
     `;
-    db.query(sql, [
-      data.code,
-      data.type,
-      data.amount,
-      data.minSpend,
-      data.publish_at,
-      data.expire_at,
-      id
-    ], callback);
+    db.query(
+      sql,
+      [
+        data.code,
+        data.type,
+        data.amount,
+        data.minSpend,
+        data.publish_at,
+        data.expire_at,
+        id
+      ],
+      callback
+    );
   },
 
   delete(id, callback) {

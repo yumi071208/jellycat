@@ -1,6 +1,6 @@
 <nav class="jm-nav">
   <div class="jm-nav-inner">
-    <a class="jm-logo" href="/">JellyMart</a>
+    <a class="jm-logo" href="/">Jellybloom</a>
 
     <form class="jm-nav-search" action="/shopping" method="GET">
       <span>Search</span>
@@ -10,17 +10,7 @@
     <div class="jm-nav-links">
       <a href="/shopping">Shop</a>
       <a href="/faq">FAQ</a>
-      <% if (user) { %>
-        <a href="/cart">Cart <% if (user.cartCount) { %>(<%= user.cartCount %>)<% } %></a>
-        <a href="/orders">My Orders</a>
-        <% if (user.role === 'admin') { %>
-          <a href="/admin/inventory">Inventory</a>
-        <% } %>
-        <a href="/logout">Logout</a>
-      <% } else { %>
-        <a href="/login">Login</a>
-        <a href="/register" class="jm-nav-cta">Sign Up</a>
-      <% } %>
+      <a href="/cart">Cart <% if (cartCount) { %>(<%= cartCount %>)<% } %></a>
     </div>
   </div>
 </nav>
@@ -30,8 +20,6 @@
 </script>
 
 <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-<%- include('chatbot') %>
 
 <script>
   (function () {

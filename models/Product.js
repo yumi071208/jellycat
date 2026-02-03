@@ -4,15 +4,22 @@ const Product = {
 
   // ========= PRODUCTS ========= //
   getAll: function(callback) {
-    db.query("SELECT * FROM products", callback);
+    db.query(
+      "SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category FROM products",
+      callback
+    );
   },
 
   getAllFiltered: function(search, category, callback) {
-    let sql = "SELECT * FROM products WHERE 1=1";
+    let sql = `
+      SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category
+      FROM products
+      WHERE 1=1
+    `;
     let params = [];
 
     if (search) {
-      sql += " AND productName LIKE ?";
+      sql += " AND name LIKE ?";
       params.push("%" + search + "%");
     }
 
@@ -25,15 +32,19 @@ const Product = {
   },
 
   getById: function(id, callback) {
-    db.query("SELECT * FROM products WHERE id=?", [id], (err, rows) => {
+    db.query(
+      "SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category FROM products WHERE product_id=?",
+      [id],
+      (err, rows) => {
       if (err) return callback(err);
       callback(null, rows[0]);
-    });
+      }
+    );
   },
 
   add: function(data, callback) {
     const sql = `
-      INSERT INTO products (productName, quantity, price, image, category)
+      INSERT INTO products (name, stock, price, image_url, category)
       VALUES (?, ?, ?, ?, ?)
     `;
     db.query(sql, [
@@ -47,8 +58,8 @@ const Product = {
 
   update: function(id, data, callback) {
     const sql = `
-      UPDATE products SET productName=?, quantity=?, price=?, image=?, category=?
-      WHERE id=?
+      UPDATE products SET name=?, stock=?, price=?, image_url=?, category=?
+      WHERE product_id=?
     `;
     db.query(sql, [
       data.productName,
@@ -61,7 +72,7 @@ const Product = {
   },
 
   delete: function(id, callback) {
-    db.query("DELETE FROM products WHERE id=?", [id], callback);
+    db.query("DELETE FROM products WHERE product_id=?", [id], callback);
   },
 
   // ========= CART ========= //
@@ -90,9 +101,9 @@ const Product = {
   getCart: function(userId, callback) {
     const sql = `
       SELECT c.id AS cart_id, c.quantity,
-             p.id, p.productName, p.price, p.image
+             p.product_id AS id, p.name AS productName, p.price, p.image_url AS image, p.stock AS quantity_available
       FROM cart c
-      JOIN products p ON c.product_id=p.id
+      JOIN products p ON c.product_id=p.product_id
       WHERE c.user_id = ?
     `;
     db.query(sql, [userId], callback);
@@ -158,27 +169,26 @@ const Product = {
   updateOrderPayment: function(orderId, paymentStatus, paymentMethod, paymentReference, callback) {
     const sql = `
       UPDATE orders
-      SET payment_status = ?, payment_method = ?, payment_reference = ?
-      WHERE id = ?
+      SET payment_status = ?, payment_method = ?
+      WHERE order_id = ?
     `;
-    db.query(sql, [paymentStatus, paymentMethod, paymentReference, orderId], callback);
+    db.query(sql, [paymentStatus, paymentMethod, orderId], callback);
   },
 
   getOrderById: function(orderId, callback) {
     const sql = `
-      SELECT o.*, u.username, u.email
+      SELECT o.*
       FROM orders o
-      JOIN users u ON o.user_id = u.id
-      WHERE o.id = ?
+      WHERE o.order_id = ?
     `;
     db.query(sql, [orderId], callback);
   },
 
   getOrderItems: function(orderId, callback) {
     const sql = `
-      SELECT oi.*, p.productName, p.image
+      SELECT oi.*, oi.price_at_purchase AS price, p.name AS productName, p.image_url AS image
       FROM order_items oi
-      JOIN products p ON oi.product_id = p.id
+      JOIN products p ON oi.product_id = p.product_id
       WHERE oi.order_id = ?
     `;
     db.query(sql, [orderId], callback);
@@ -211,17 +221,35 @@ const Product = {
       WHERE r.product_id=? 
       ORDER BY r.created_at DESC
     `;
-    db.query(sql, [productId], callback);
+    db.query(sql, [productId], (err, rows) => {
+      if (err && err.code === "ER_NO_SUCH_TABLE") {
+        return callback(null, []);
+      }
+      callback(err, rows);
+    });
   },
 
   // ========= SORTING ========= //
-  getAllSorted: function (search, category, sort, callback) {
+  getAllSorted: function (search, category, sort, inStock, callback) {
+    const excludedImagePatterns = [
+      "logo%",
+      "%-logo.%",
+      "paynow%",
+      "hero-%",
+      "cat-%"
+    ];
     let sql = `
       SELECT 
-        p.*, 
-        (SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id) AS avgRating,
-        (SELECT COUNT(*) FROM reviews r WHERE r.product_id = p.id) AS reviewCount,
-        (SELECT SUM(oi.quantity) FROM order_items oi WHERE oi.product_id = p.id) AS popularity
+        p.product_id AS id,
+        p.name AS productName,
+        p.description,
+        p.price,
+        p.image_url AS image,
+        p.stock AS quantity,
+        p.category,
+        0 AS avgRating,
+        0 AS reviewCount,
+        (SELECT SUM(oi.quantity) FROM order_items oi WHERE oi.product_id = p.product_id) AS popularity
       FROM products p
       WHERE 1=1
     `;
@@ -229,7 +257,7 @@ const Product = {
     let params = [];
 
     if (search) {
-      sql += " AND p.productName LIKE ?";
+      sql += " AND p.name LIKE ?";
       params.push("%" + search + "%");
     }
 
@@ -238,13 +266,62 @@ const Product = {
       params.push(category);
     }
 
+    excludedImagePatterns.forEach((pattern) => {
+      sql += " AND p.image_url NOT LIKE ?";
+      params.push(pattern);
+    });
+
+    if (inStock) {
+      sql += " AND p.stock > 0";
+    }
+
     if (sort === "popular") sql += " ORDER BY popularity DESC";
     else if (sort === "rating") sql += " ORDER BY avgRating DESC";
     else if (sort === "lowhigh") sql += " ORDER BY p.price ASC";
     else if (sort === "highlow") sql += " ORDER BY p.price DESC";
-    else sql += " ORDER BY p.productName ASC";
+    else sql += " ORDER BY p.name ASC";
 
-    db.query(sql, params, callback);
+    db.query(sql, params, (err, rows) => {
+      if (!err) return callback(null, rows);
+
+      // Fallback for missing columns/tables (e.g., category/order_items not present)
+      if (err.code === "ER_BAD_FIELD_ERROR" || err.code === "ER_NO_SUCH_TABLE") {
+        let fallbackSql = `
+          SELECT 
+            p.product_id AS id,
+            p.name AS productName,
+            p.description,
+            p.price,
+            p.image_url AS image,
+            p.stock AS quantity
+          FROM products p
+          WHERE 1=1
+        `;
+        const fallbackParams = [];
+
+        if (search) {
+          fallbackSql += " AND p.name LIKE ?";
+          fallbackParams.push("%" + search + "%");
+        }
+
+        excludedImagePatterns.forEach((pattern) => {
+          fallbackSql += " AND p.image_url NOT LIKE ?";
+          fallbackParams.push(pattern);
+        });
+
+        if (inStock) {
+          fallbackSql += " AND p.stock > 0";
+        }
+
+        if (sort === "lowhigh") fallbackSql += " ORDER BY p.price ASC";
+        else if (sort === "highlow") fallbackSql += " ORDER BY p.price DESC";
+        else fallbackSql += " ORDER BY p.name ASC";
+
+        return db.query(fallbackSql, fallbackParams, callback);
+      }
+
+      return callback(err);
+    });
   },
 
   // ========= RATING SUMMARY ========= //
@@ -255,6 +332,9 @@ const Product = {
       WHERE r.product_id=?
     `;
     db.query(sql, [productId], (err, rows) => {
+      if (err && err.code === "ER_NO_SUCH_TABLE") {
+        return callback(null, { avgRating: 0, reviewCount: 0 });
+      }
       if (err) return callback(err);
       callback(null, rows[0]);
     });

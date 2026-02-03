@@ -19,18 +19,15 @@
     <div class="layout-card mb-4">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
         <div>
-          <div class="status-pill mb-2">Payment Successful</div>
+          <div class="status-pill mb-2">Payment <%= order.payment_status %></div>
           <p class="text-muted mb-1"><strong>Date:</strong> <%= new Date(order.created_at).toLocaleString() %></p>
-          <p class="text-muted mb-1"><strong>Order ID:</strong> <%= order.id %></p>
+          <p class="text-muted mb-1"><strong>Order ID:</strong> <%= order.order_id %></p>
           <p class="text-muted mb-0"><strong>Payment Method:</strong> <%= order.payment_method %></p>
         </div>
         <div class="text-md-end">
-          <p class="text-muted mb-1"><strong>Fulfilment:</strong> <%= order.delivery_method === 'pickup' ? 'Self-Pickup' : 'Delivery' %></p>
-          <% if (order.delivery_method === 'pickup') { %>
-            <p class="text-muted mb-0">Pickup at JellyMart, 123 Market Street. Daily 10:00–20:00.</p>
-          <% } else { %>
-            <p class="text-muted mb-0"><strong>Address:</strong> <%= order.address %></p>
-          <% } %>
+          <p class="text-muted mb-1"><strong>Buyer:</strong> <%= order.buyer_name %></p>
+          <p class="text-muted mb-1"><strong>Email:</strong> <%= order.buyer_email || '-' %></p>
+          <p class="text-muted mb-0"><strong>Phone:</strong> <%= order.buyer_phone || '-' %></p>
         </div>
       </div>
 
@@ -51,7 +48,7 @@
               <th>Unit Price</th>
               <th>Qty</th>
               <th>Subtotal</th>
-              <th>Review</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -69,7 +66,7 @@
               <td>$<%= price.toFixed(2) %></td>
               <td><%= quantity %></td>
               <td class="fw-semibold">$<%= subtotal.toFixed(2) %></td>
-              <td><a href="/review/<%= item.product_id %>" class="pastel-btn btn-sm">Review</a></td>
+              <td></td>
             </tr>
             <% }) %>
           </tbody>
@@ -79,18 +76,10 @@
               <th class="text-end">Subtotal</th>
               <th>$<%= total.toFixed(2) %></th>
             </tr>
-            <% const discount = Math.max(0, total - Number(order.total)); %>
-            <% if (discount > 0) { %>
-              <tr>
-                <th colspan="5"></th>
-                <th class="text-end text-success">Discount</th>
-                <th class="text-success">-$<%= discount.toFixed(2) %></th>
-              </tr>
-            <% } %>
             <tr class="border-top">
               <th colspan="5"></th>
               <th class="text-end fs-5">Total</th>
-              <th class="fs-5 text-primary">$<%= Number(order.total).toFixed(2) %></th>
+              <th class="fs-5 text-primary">$<%= Number(order.total_amount).toFixed(2) %></th>
             </tr>
           </tfoot>
         </table>

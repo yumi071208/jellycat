@@ -16,75 +16,91 @@
     <div class="store-shell">
       <section class="hero-slider mb-4">
         <div class="hero-track">
+          <% const heroImage = (heroImages && heroImages.length)
+              ? heroImages[0]
+              : 'hero-gifting.png'; %>
+
           <div class="hero-slide">
             <div>
-              <h2>Everyday Essentials, Thoughtfully Curated</h2>
-              <p>Fresh groceries. Honest pricing. Limited stock.</p>
+              <h2>Jellycat Soft Toys, Thoughtfully Curated</h2>
+              <p>Cuddly companions, whimsical characters, limited drops.</p>
               <a href="/shopping" class="pastel-btn">Shop Now</a>
             </div>
-            <img src="/images/bread.png" alt="Fresh bread">
-          </div>
-          <div class="hero-slide slide-two">
-            <div>
-              <h2>Seasonal Picks for the Week</h2>
-              <p>Top fruits and chilled goods delivered daily.</p>
-              <a href="/shopping?category=Fruits" class="pastel-btn">Browse Fruits</a>
-            </div>
-            <img src="/images/apples.png" alt="Seasonal fruits">
-          </div>
-          <div class="hero-slide slide-three">
-            <div>
-              <h2>Home Care, On Repeat</h2>
-              <p>Household staples ready to restock.</p>
-              <a href="/shopping?category=Household" class="pastel-btn">Shop Household</a>
-            </div>
-            <img src="/images/bleach.png" alt="Household essentials">
+            <img src="/images/<%= heroImage %>" alt="Jellycat hero">
           </div>
         </div>
       </section>
 
-      <section class="mb-4">
-        <div class="chip-row">
-          <div class="chip-card">
-            <img src="/images/apples.png" alt="Fruits">
-            <div>
-              <strong>Fruits & Vegetables</strong>
-              <div class="text-muted small">Daily freshness</div>
+      <section class="category-showcase mb-4">
+        <div class="text-center mb-4">
+          <h2 class="category-title">Jellycat Categories</h2>
+          <p class="category-subtitle">Discover your next soft companion, from classic bunnies to playful amuseables.</p>
+        </div>
+
+        <div class="category-grid">
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/cat-bunnies.png" alt="Bunnies">
+            </div>
+            <div class="category-body">
+              <h3>Bunnies</h3>
+              <p>Soft & snuggly</p>
+              <a href="/shopping?category=Bunnies" class="category-link">Shop collection →</a>
             </div>
           </div>
-          <div class="chip-card">
-            <img src="/images/salmon.png" alt="Seafood">
-            <div>
-              <strong>Meat & Seafood</strong>
-              <div class="text-muted small">Chilled selection</div>
+
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/cat-classic.png" alt="Animals">
+            </div>
+            <div class="category-body">
+              <h3>Animals</h3>
+              <p>Cuddly friends</p>
+              <a href="/shopping?category=Animals" class="category-link">Shop collection →</a>
             </div>
           </div>
-          <div class="chip-card">
-            <img src="/images/milk.png" alt="Dairy">
-            <div>
-              <strong>Dairy & Chilled</strong>
-              <div class="text-muted small">Keep it cool</div>
+
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/cat-amuseables.png" alt="Amuseables">
+            </div>
+            <div class="category-body">
+              <h3>Amuseables</h3>
+              <p>Playful characters</p>
+              <a href="/shopping?category=Amuseables" class="category-link">Shop collection →</a>
             </div>
           </div>
-          <div class="chip-card">
-            <img src="/images/cheetos.png" alt="Snacks">
-            <div>
-              <strong>Snacks</strong>
-              <div class="text-muted small">Crunch ready</div>
+
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/cat-limited.png" alt="Retired">
+            </div>
+            <div class="category-body">
+              <h3>Retired</h3>
+              <p>Limited finds</p>
+              <a href="/shopping?category=Retired" class="category-link">Shop collection →</a>
             </div>
           </div>
-          <div class="chip-card">
-            <img src="/images/detergent.png" alt="Household">
-            <div>
-              <strong>Household</strong>
-              <div class="text-muted small">Stocked up</div>
+
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/Amuseables Peanut.png" alt="Charms">
+            </div>
+            <div class="category-body">
+              <h3>Charms</h3>
+              <p>Tiny companions</p>
+              <a href="/shopping?category=Charms" class="category-link">Shop collection →</a>
             </div>
           </div>
-          <div class="chip-card">
-            <img src="/images/greentea.png" alt="Beverages">
-            <div>
-              <strong>Beverages</strong>
-              <div class="text-muted small">Hydration</div>
+
+          <div class="category-card">
+            <div class="category-media">
+              <img src="/images/Dust Bag MEDIUM.png" alt="Merchandise">
+            </div>
+            <div class="category-body">
+              <h3>Merchandise</h3>
+              <p>Accessories & extras</p>
+              <a href="/shopping?category=Merchandise" class="category-link">Shop collection →</a>
             </div>
           </div>
         </div>
@@ -109,23 +125,28 @@
           </div>
           <div class="col-md-5">
             <label class="small text-muted">Search</label>
-            <input type="text" class="form-control" name="search" placeholder="Search groceries...">
+            <input type="text" class="form-control" name="search" placeholder="Search soft toys...">
           </div>
           <div class="col-md-3">
             <label class="small text-muted">Category</label>
             <select class="form-select" name="category">
               <option value="">All Categories</option>
-              <option value="Snacks">Snacks</option>
-              <option value="Beverages">Beverages</option>
-              <option value="Vegetables">Vegetables</option>
-              <option value="Fruits">Fruits</option>
-              <option value="Household">Household</option>
-              <option value="Meats">Meats</option>
-              <option value="Alcohol">Alcohol</option>
+              <option value="Bunnies">Bunnies</option>
+              <option value="Animals">Animals</option>
+              <option value="Amuseables">Amuseables</option>
+              <option value="Retired">Retired</option>
+              <option value="Charms">Charms</option>
+              <option value="Merchandise">Merchandise</option>
             </select>
           </div>
-          <div class="col-md-1 d-grid">
+          <div class="col-md-12 col-lg-1 d-grid">
             <button type="submit" class="pastel-btn">Apply</button>
+          </div>
+          <div class="col-md-12 col-lg-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="inStockIndex" name="inStock" value="1">
+              <label class="form-check-label" for="inStockIndex">Hide sold out</label>
+            </div>
           </div>
         </form>
       </section>
@@ -142,7 +163,7 @@
           <p class="text-muted">No products available right now.</p>
         <% } else { %>
           <div class="row g-4">
-            <% for (let i = 0; i < Math.min(products.length, 8); i++) { %>
+            <% for (let i = 0; i < products.length; i++) { %>
               <% const item = products[i]; %>
               <div class="col-6 col-md-3">
                 <div class="product-card h-100 d-flex flex-column">

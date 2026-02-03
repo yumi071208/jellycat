@@ -16,8 +16,8 @@
   <div class="container my-5">
     <div class="hero-banner mb-4">
       <div>
-        <h2>Everyday Essentials, Thoughtfully Curated</h2>
-        <p class="mb-2">Fresh groceries. Honest pricing. Limited stock.</p>
+        <h2>Jellycat Soft Toys, Thoughtfully Curated</h2>
+        <p class="mb-2">Cuddly companions, whimsical characters, limited drops.</p>
         <a href="#shop" class="pastel-btn">Shop Now</a>
       </div>
       <div class="text-end d-none d-md-block">
@@ -37,59 +37,38 @@
         </select>
       </div>
 
-      <div class="col-md-5">
+      <div class="col-md-4">
         <label class="small text-muted">Search</label>
-        <input type="text" class="form-control" name="search" placeholder="Search groceries..." value="<%= search || '' %>">
+        <input type="text" class="form-control" name="search" placeholder="Search soft toys..." value="<%= search || '' %>">
       </div>
 
       <div class="col-md-3">
         <label class="small text-muted">Category</label>
         <select class="form-select" name="category">
           <option value="">All Categories</option>
-          <option value="Snacks" <%= category === 'Snacks' ? 'selected' : '' %>>Snacks</option>
-          <option value="Beverages" <%= category === 'Beverages' ? 'selected' : '' %>>Beverages</option>
-          <option value="Vegetables" <%= category === 'Vegetables' ? 'selected' : '' %>>Vegetables</option>
-          <option value="Fruits" <%= category === 'Fruits' ? 'selected' : '' %>>Fruits</option>
-          <option value="Household" <%= category === 'Household' ? 'selected' : '' %>>Household</option>
-          <option value="Meats" <%= category === 'Meats' ? 'selected' : '' %>>Meats</option>
-          <option value="Alcohol" <%= category === 'Alcohol' ? 'selected' : '' %>>Alcohol</option>
+          <option value="Bunnies" <%= category === 'Bunnies' ? 'selected' : '' %>>Bunnies</option>
+          <option value="Animals" <%= category === 'Animals' ? 'selected' : '' %>>Animals</option>
+          <option value="Amuseables" <%= category === 'Amuseables' ? 'selected' : '' %>>Amuseables</option>
+          <option value="Retired" <%= category === 'Retired' ? 'selected' : '' %>>Retired</option>
+          <option value="Charms" <%= category === 'Charms' ? 'selected' : '' %>>Charms</option>
+          <option value="Merchandise" <%= category === 'Merchandise' ? 'selected' : '' %>>Merchandise</option>
         </select>
       </div>
 
-      <div class="col-md-1 d-grid">
+      <div class="col-md-2">
+        <label class="small text-muted">Availability</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="inStock" name="inStock" value="1" <%= inStock ? 'checked' : '' %>>
+          <label class="form-check-label" for="inStock">Hide sold out</label>
+        </div>
+      </div>
+
+      <div class="col-md-12 col-lg-2 d-grid">
         <button type="submit" class="pastel-btn">Apply</button>
       </div>
     </form>
 
     <% const hasProducts = products && products.length > 0; %>
-
-    <% if (vouchers && vouchers.length > 0) { %>
-      <div class="layout-card mb-5">
-        <div class="section-title mb-3">
-          <span>Available Vouchers</span>
-        </div>
-
-        <div class="row g-3">
-          <% vouchers.forEach(v => { %>
-            <div class="col-md-4">
-              <div class="jc-voucher-card h-100">
-                <h6 class="mb-1"><%= v.code %></h6>
-                <p class="mb-1">
-                  <%= v.type === 'percent' ? v.amount + '% OFF' : '$' + v.amount + ' OFF' %>
-                </p>
-                <p class="small text-muted mb-1">Min Spend: $<%= Number(v.minSpend).toFixed(2) %></p>
-                <p class="small text-muted mb-2">Expiry: <%= new Date(v.expire_at).toISOString().slice(0,10) %></p>
-
-                <form method="POST" action="/apply-voucher">
-                  <input type="hidden" name="voucherCode" value="<%= v.code %>">
-                  <button class="jc-voucher-btn">Apply Voucher</button>
-                </form>
-              </div>
-            </div>
-          <% }) %>
-        </div>
-      </div>
-    <% } %>
 
     <div class="layout-card" id="shop">
       <div class="section-title mb-3">

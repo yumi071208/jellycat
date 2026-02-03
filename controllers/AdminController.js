@@ -24,20 +24,21 @@ const AdminController = {
               stats.revenueWeek = revWeekRows[0].revenueWeek;
 
               const bestSql = `
-                SELECT p.id, p.productName, p.image,
+                SELECT p.product_id AS id, p.name AS productName, p.image_url AS image,
                        IFNULL(SUM(oi.quantity),0) AS soldQty
                 FROM products p
-                LEFT JOIN order_items oi ON oi.product_id = p.id
-                GROUP BY p.id
+                LEFT JOIN order_items oi ON oi.product_id = p.product_id
+                GROUP BY p.product_id
                 ORDER BY soldQty DESC
                 LIMIT 5
               `;
 
               db.query(bestSql, (err6, bestRows) => {
                 const lowStockSql = `
-                  SELECT * FROM products
-                  WHERE quantity <= 10
-                  ORDER BY quantity ASC
+                  SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category
+                  FROM products
+                  WHERE stock <= 10
+                  ORDER BY stock ASC
                   LIMIT 5
                 `;
                 db.query(lowStockSql, (err7, lowRows) => {
@@ -79,7 +80,11 @@ const AdminController = {
     const category = req.query.category || '';
     const lowFirst = req.query.lowFirst === '1';
 
-    let sql = "SELECT * FROM products WHERE 1=1";
+    let sql = `
+      SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category
+      FROM products
+      WHERE 1=1
+    `;
     const params = [];
 
     if (category) {
@@ -87,7 +92,7 @@ const AdminController = {
       params.push(category);
     }
 
-    sql += lowFirst ? " ORDER BY quantity ASC" : " ORDER BY productName ASC";
+    sql += lowFirst ? " ORDER BY stock ASC" : " ORDER BY name ASC";
 
     db.query(sql, params, (err, rows) => {
       res.render("adminInventory", {
@@ -160,10 +165,10 @@ const AdminController = {
   // ========== REVIEWS ==========
   showReviews(req, res) {
     const sql = `
-      SELECT r.*, u.username, p.productName
+      SELECT r.*, u.username, p.name AS productName
       FROM reviews r
       JOIN users u ON r.user_id=u.id
-      JOIN products p ON r.product_id=p.id
+      JOIN products p ON r.product_id=p.product_id
       ORDER BY r.created_at DESC
     `;
     db.query(sql, (err, rows) =>

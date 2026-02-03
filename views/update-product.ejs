@@ -29,7 +29,15 @@
         </div>
         <div class="mb-3">
           <label class="form-label">Category</label>
-          <input type="text" name="category" class="form-control" value="<%= product.category %>" required>
+          <select name="category" class="form-select" required>
+            <option value="">Select a category</option>
+            <option value="Bunnies" <%= product.category === 'Bunnies' ? 'selected' : '' %>>Bunnies</option>
+            <option value="Animals" <%= product.category === 'Animals' ? 'selected' : '' %>>Animals</option>
+            <option value="Amuseables" <%= product.category === 'Amuseables' ? 'selected' : '' %>>Amuseables</option>
+            <option value="Retired" <%= product.category === 'Retired' ? 'selected' : '' %>>Retired</option>
+            <option value="Charms" <%= product.category === 'Charms' ? 'selected' : '' %>>Charms</option>
+            <option value="Merchandise" <%= product.category === 'Merchandise' ? 'selected' : '' %>>Merchandise</option>
+          </select>
         </div>
         <div class="mb-3">
           <label class="form-label">Current Image</label><br>
