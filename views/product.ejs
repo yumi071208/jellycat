@@ -26,37 +26,26 @@
 
         <div class="col-md-7">
           <div class="mb-2">
-            <span class="price-main fs-4">$<%= Number(product.price).toFixed(2) %></span>
+            <span class="price-main fs-4" id="product-price" data-base-price="<%= Number(product.price).toFixed(2) %>">
+              $<%= Number(product.price).toFixed(2) %>
+            </span>
           </div>
 
-          <p class="mb-2"><strong>Available stock:</strong> <%= product.quantity %></p>
+          
 
-          <p class="mb-3">
-            <%
-              let reviewCount = reviews.length;
-              let averageRating = reviewCount > 0
-                ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount)
-                : 0;
-            %>
-            <strong>Rating:</strong>
-            <% if (reviewCount > 0) { %>
-              <%= averageRating.toFixed(1) %> / 5
-              <span class="text-muted">(<%= reviewCount %> reviews)</span>
-            <% } else { %>
-              <span class="text-muted">No ratings yet</span>
-            <% } %>
-          </p>
+          
 
-          <% if (product.quantity <= 0) { %>
-            <p class="text-danger fw-semibold">This item is currently sold out.</p>
-          <% } else if (product.quantity <= 5) { %>
-            <p class="text-warning fw-semibold">Only <%= product.quantity %> left in stock.</p>
-          <% } %>
-
-          <div class="mt-4 d-flex gap-2 flex-wrap">
-            <% if (canReview) { %>
-              <a href="/review/<%= product.id %>" class="pastel-btn">Write a review</a>
-            <% } %>
+          <div class="mt-4">
+            <form action="/add-to-cart/<%= product.id %>" method="POST" class="d-flex flex-column gap-2" id="product-add-form">
+              <div class="d-flex gap-2 align-items-center">
+                <input type="number" name="quantity" value="1" min="1" max="<%= product.quantity %>" class="jc-qty">
+                <button type="submit" class="pastel-btn">Add to Cart</button>
+              </div>
+              <label class="form-check small text-muted">
+                <input class="form-check-input me-1" type="checkbox" name="add_dust_bag" value="1" id="dust-bag-toggle">
+                Add dust bag +$3
+              </label>
+            </form>
           </div>
         </div>
       </div>
@@ -64,23 +53,28 @@
 
     <div class="layout-card">
       <div class="section-title mb-3">
-        <span>Customer Reviews</span>
+        <span>Product Details</span>
       </div>
-
-      <% if (reviews.length === 0) { %>
-        <p class="text-muted">No reviews yet for this product.</p>
-      <% } %>
-
-      <% reviews.forEach(r => { %>
-        <div class="card-soft mb-3">
-          <div class="d-flex justify-content-between">
-            <strong><%= r.username %></strong>
-            <span><%= r.rating %> / 5</span>
-          </div>
-          <div class="mt-2 text-muted"><%= r.comment %></div>
-        </div>
-      <% }) %>
+      <p class="text-muted">Details coming soon.</p>
     </div>
   </div>
+
+  <script>
+    (function () {
+      const priceEl = document.getElementById("product-price");
+      const dustToggle = document.getElementById("dust-bag-toggle");
+      if (!priceEl || !dustToggle) return;
+
+      const basePrice = parseFloat(priceEl.dataset.basePrice || "0");
+      const updatePrice = () => {
+        const addOn = dustToggle.checked ? 3 : 0;
+        const total = basePrice + addOn;
+        priceEl.textContent = `$${total.toFixed(2)}`;
+      };
+
+      dustToggle.addEventListener("change", updatePrice);
+      updatePrice();
+    })();
+  </script>
 </body>
 </html>

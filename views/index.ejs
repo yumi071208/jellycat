@@ -14,21 +14,16 @@
 
   <div class="container my-5">
     <div class="store-shell">
-      <section class="hero-slider mb-4">
-        <div class="hero-track">
-          <% const heroImage = (heroImages && heroImages.length)
-              ? heroImages[0]
-              : 'hero-gifting.png'; %>
-
-          <div class="hero-slide">
-            <div>
-              <h2>Jellycat Soft Toys, Thoughtfully Curated</h2>
-              <p>Cuddly companions, whimsical characters, limited drops.</p>
-              <a href="/shopping" class="pastel-btn">Shop Now</a>
-            </div>
-            <img src="/images/<%= heroImage %>" alt="Jellycat hero">
-          </div>
+      <section class="hero-banner mb-4">
+        <% const heroImage = (heroImages && heroImages.length)
+            ? heroImages[0]
+            : 'hero-gifting.png'; %>
+        <div>
+          <h2>Jellycat Soft Toys, Thoughtfully Curated</h2>
+          <p>Cuddly companions, whimsical characters, limited drops.</p>
+          <a href="/shopping" class="pastel-btn">Shop Now</a>
         </div>
+        <img src="/images/<%= heroImage %>" alt="Jellycat hero" style="max-width: 360px; border-radius: 16px;">
       </section>
 
       <section class="category-showcase mb-4">
@@ -118,7 +113,6 @@
             <select class="form-select" name="sort">
               <option value="">Default</option>
               <option value="popular">Most Popular</option>
-              <option value="rating">Best Rating</option>
               <option value="lowhigh">Price: Low - High</option>
               <option value="highlow">Price: High - Low</option>
             </select>
@@ -178,9 +172,15 @@
                     <% if (item.quantity <= 0) { %>
                       <button class="pastel-secondary-btn w-100" disabled>Unavailable</button>
                     <% } else { %>
-                      <form action="/add-to-cart/<%= item.id %>" method="POST" class="d-flex gap-2">
-                        <input type="number" name="quantity" value="1" min="1" max="<%= item.quantity %>" class="jc-qty">
-                        <button type="submit" class="pastel-btn w-100">Add</button>
+                      <form action="/add-to-cart/<%= item.id %>" method="POST" class="d-flex flex-column gap-2">
+                        <div class="d-flex gap-2 align-items-center">
+                          <input type="number" name="quantity" value="1" min="1" max="<%= item.quantity %>" class="jc-qty">
+                          <button type="submit" class="pastel-btn w-100">Add</button>
+                        </div>
+                        <label class="form-check small text-muted">
+                          <input class="form-check-input me-1" type="checkbox" name="add_dust_bag" value="1">
+                          Add dust bag +$3
+                        </label>
                       </form>
                     <% } %>
                   </div>

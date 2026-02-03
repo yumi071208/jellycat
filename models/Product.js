@@ -324,6 +324,20 @@ const Product = {
     });
   },
 
+  getDustBag: function (callback) {
+    const sql = `
+      SELECT product_id AS id, name AS productName, description, price, image_url AS image, stock AS quantity, category
+      FROM products
+      WHERE name LIKE 'Dust Bag%'
+      ORDER BY product_id ASC
+      LIMIT 1
+    `;
+    db.query(sql, (err, rows) => {
+      if (err) return callback(err);
+      callback(null, rows[0]);
+    });
+  },
+
   // ========= RATING SUMMARY ========= //
   getRatingSummary: function (productId, callback) {
     const sql = `

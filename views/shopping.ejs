@@ -31,7 +31,6 @@
         <select class="form-select" name="sort">
           <option value="">Default</option>
           <option value="popular" <%= sort === 'popular' ? 'selected' : '' %>>Most Popular</option>
-          <option value="rating" <%= sort === 'rating' ? 'selected' : '' %>>Best Rating</option>
           <option value="lowhigh" <%= sort === 'lowhigh' ? 'selected' : '' %>>Price: Low - High</option>
           <option value="highlow" <%= sort === 'highlow' ? 'selected' : '' %>>Price: High - Low</option>
         </select>
@@ -106,9 +105,15 @@
                   <% if (soldOut) { %>
                     <button class="pastel-secondary-btn w-100" disabled>Unavailable</button>
                   <% } else { %>
-                    <form action="/add-to-cart/<%= products[i].id %>" method="POST" class="d-flex gap-2">
-                      <input type="number" name="quantity" value="1" min="1" max="<%= stock %>" class="jc-qty">
-                      <button type="submit" class="pastel-btn w-100">Add</button>
+                    <form action="/add-to-cart/<%= products[i].id %>" method="POST" class="d-flex flex-column gap-2">
+                      <div class="d-flex gap-2 align-items-center">
+                        <input type="number" name="quantity" value="1" min="1" max="<%= stock %>" class="jc-qty">
+                        <button type="submit" class="pastel-btn w-100">Add</button>
+                      </div>
+                      <label class="form-check small text-muted">
+                        <input class="form-check-input me-1" type="checkbox" name="add_dust_bag" value="1">
+                        Add dust bag +$3
+                      </label>
                     </form>
                   <% } %>
                 </div>

@@ -63,6 +63,7 @@ const ProductController = {
   addToCart: function (req, res) {
     const productId = req.params.id;
     const qtyRequested = parseInt(req.body.quantity) || 1;
+    const addDustBag = req.body.add_dust_bag === "1";
 
     Product.getById(productId, (err, product) => {
       if (!product) return res.send("Product not found.");
@@ -94,8 +95,37 @@ const ProductController = {
         });
       }
 
-      req.session.cart = cart;
-      res.redirect("/cart");
+      const finalize = () => {
+        req.session.cart = cart;
+        res.redirect("/cart");
+      };
+
+      if (!addDustBag) {
+        return finalize();
+      }
+
+      Product.getDustBag((dustErr, dustBag) => {
+        if (dustErr || !dustBag) {
+          return finalize();
+        }
+
+        const dustExisting = cart.find((i) => String(i.id) === String(dustBag.id) && i.isAddon);
+        if (dustExisting) {
+          dustExisting.quantity += 1;
+        } else {
+          cart.push({
+            id: dustBag.id,
+            productName: "Dust Bag (Add-on)",
+            price: 3,
+            image: dustBag.image,
+            quantity: 1,
+            stock: dustBag.quantity,
+            isAddon: true
+          });
+        }
+
+        finalize();
+      });
     });
   },
 

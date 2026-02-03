@@ -82,14 +82,20 @@
               </div>
 
               <% 
-                let subtotal = 0;
+                let itemsTotal = 0;
+                let dustBagTotal = 0;
                 cart.forEach(item => {
-                  subtotal += item.price * item.quantity;
+                  const lineTotal = item.price * item.quantity;
+                  if (item.isAddon) {
+                    dustBagTotal += lineTotal;
+                    return;
+                  }
+                  itemsTotal += lineTotal;
               %>
 
               <div class="d-flex justify-content-between small mb-2">
                 <div><%= item.productName %> x <%= item.quantity %></div>
-                <div>$<%= (item.price * item.quantity).toFixed(2) %></div>
+                <div>$<%= lineTotal.toFixed(2) %></div>
               </div>
 
               <% }) %>
@@ -98,11 +104,18 @@
 
               <div class="d-flex justify-content-between small">
                 <span>Subtotal</span>
-                <span>$<%= subtotal.toFixed(2) %></span>
+                <span>$<%= itemsTotal.toFixed(2) %></span>
               </div>
 
+              <% if (dustBagTotal > 0) { %>
+                <div class="d-flex justify-content-between small text-muted">
+                  <span>Dust Bag Add-on</span>
+                  <span>$<%= dustBagTotal.toFixed(2) %></span>
+                </div>
+              <% } %>
+
               <% 
-                let baseTotal = Math.max(0, subtotal);
+                let baseTotal = Math.max(0, itemsTotal + dustBagTotal);
                 let deliveryFee = 4;
                 let total = baseTotal + deliveryFee;
               %>

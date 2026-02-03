@@ -35,17 +35,24 @@
 
             <div class="col-9 col-md-4">
               <strong><%= item.productName %></strong>
+              <% if (item.isAddon) { %>
+                <div class="text-muted small">Add-on</div>
+              <% } %>
               <div class="text-muted small">$<%= Number(item.price).toFixed(2) %> each</div>
             </div>
 
             <div class="col-6 col-md-2 mt-3 mt-md-0">
-              <form action="/cart/update/<%= item.id %>" method="POST">
-                <select class="form-select form-select-sm" name="quantity" onchange="this.form.submit()">
-                  <% for (let q = 1; q <= Math.max(5, item.quantity); q++) { %>
-                    <option value="<%= q %>" <%= item.quantity == q ? 'selected' : '' %>><%= q %></option>
-                  <% } %>
-                </select>
-              </form>
+              <% if (item.isAddon) { %>
+                <span class="small text-muted">Qty: <%= item.quantity %></span>
+              <% } else { %>
+                <form action="/cart/update/<%= item.id %>" method="POST">
+                  <select class="form-select form-select-sm" name="quantity" onchange="this.form.submit()">
+                    <% for (let q = 1; q <= Math.max(5, item.quantity); q++) { %>
+                      <option value="<%= q %>" <%= item.quantity == q ? 'selected' : '' %>><%= q %></option>
+                    <% } %>
+                  </select>
+                </form>
+              <% } %>
             </div>
 
             <div class="col-4 col-md-2 mt-3 mt-md-0">

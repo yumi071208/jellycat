@@ -968,6 +968,24 @@ body.storefront {
   gap: 18px;
 }
 
+.jm-back {
+  border: none;
+  background: rgba(255, 255, 255, 0.35);
+  color: #2f2f3a;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jm-back:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .jm-logo {
   font-family: "Poppins", sans-serif;
   font-size: 22px;
